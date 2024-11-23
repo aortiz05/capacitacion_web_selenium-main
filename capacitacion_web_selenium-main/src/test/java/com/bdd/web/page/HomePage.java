@@ -2,9 +2,7 @@ package com.bdd.web.page;
 
 import com.fw.Parameters;
 import com.fw.Util;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -24,7 +22,7 @@ public class HomePage {
         PageFactory.initElements(driver, this);
     }
 
-    @FindBy(css = "#nameofuser")
+    @FindBy
     private WebElement userTitle;
 
     @FindBy(id = "logout2")
@@ -39,17 +37,23 @@ public class HomePage {
     @FindBy(xpath = "//a[starts-with(@class,'btn btn-success btn-lg')]")
     private WebElement addToCartButton;
 
-    @FindBy(css = "#cartur")
+    @FindBy
     private WebElement cartButton;
 
     @FindBy(xpath = "//a[contains(text(),'Home')]")
     private WebElement homeButton;
 
+    public JavascriptExecutor js = (JavascriptExecutor)Parameters.driver;
+
 
     public boolean getMensajeWelcome() {
         Util.waitThread(5000);
         Util.screenshot(Parameters.driver);
-        return userTitle.getText().contains("Welcome");
+
+        this.userTitle =Parameters.driver.findElement(By.id("nameofuser"));
+        String value = (String) js.executeScript("return arguments[0].value",userTitle);
+
+        return value.contains("Welcome");
     }
 
     public void logout() {
@@ -84,8 +88,8 @@ public class HomePage {
     public void clickCart() {
         Util.logger(this.getClass()).log(Level.WARNING, "Click en boton cartButton");
         explicitWaiting(3000, driver -> ExpectedConditions.elementToBeClickable(cartButton));
-        cartButton.click();
-     //   Util.waitThread(4000);
+        this.cartButton =Parameters.driver.findElement(By.cssSelector("#cartur"));
+        js.executeScript("arguments[0].click();", cartButton);
     }
 
     private void clickElementFromAListByText(List<WebElement> list, String toFind) {
